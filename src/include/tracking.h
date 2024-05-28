@@ -23,12 +23,12 @@ void drawCirclesForContours(Mat &frame, const vector<vector<Point>> &contours, P
     for (const auto &contour : contours) {
         float radius;
         minEnclosingCircle(contour, tracker_pos, radius);
-        circle(frame, tracker_pos, static_cast<int>(radius), Scalar(0, 255, 0), 2);
+        //circle(frame, tracker_pos, static_cast<int>(radius), Scalar(0, 255, 0), 2);
         return;
     }
 
     previous_tracker_pos = Point2f(-1, -1);
-    cout << "center: " << previous_tracker_pos << endl;
+    //cout << "center: " << previous_tracker_pos << endl;
 }
 
 void visualizeOpticalFlow(const Point2f &prev_point, const Point2f &curr_point, Mat &frame) {
@@ -41,7 +41,7 @@ void visualizeOpticalFlow(const Point2f &prev_point, const Point2f &curr_point, 
     
     // Draw the arrowed line
     arrowedLine(frame, prev_point, extended_point, Scalar(0, 255, 0), 5, 8, 0, 0.3);
-    cout << "Optical Flow: from " << prev_point << " to " << extended_point << endl;
+    //cout << "Optical Flow: from " << prev_point << " to " << extended_point << endl;
 }
 
 void trackBallInFrame(Camera& camera) {

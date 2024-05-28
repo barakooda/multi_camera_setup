@@ -15,12 +15,14 @@ public:
     cv::VideoCapture capture; // Video capture object
     cv::Point2f current_tracker_position; // Center of the ball
     cv::Point2f previous_tracker_position; // Previous center of the ball
+    unsigned int index; // Index of the camera
 
     Camera(const std::string& name, 
            const std::vector<double>& tvec, 
            const std::vector<double>& rvec, 
-           const std::vector<std::vector<double>>& K)
-    : name(name), tvec(tvec), rvec(rvec), K(K) {}
+           const std::vector<std::vector<double>>& K,
+           const unsigned int index)
+    : name(name), tvec(tvec), rvec(rvec), K(K),index(index) {}
 
     // Method to open video file
     bool openVideo(const std::string& videoPath) {
