@@ -13,6 +13,8 @@ public:
     cv::Mat currentFrame; // Current video frame
     cv::Mat background; // Background image
     cv::VideoCapture capture; // Video capture object
+    cv::Point2f current_tracker_position; // Center of the ball
+    cv::Point2f previous_tracker_position; // Previous center of the ball
 
     Camera(const std::string& name, 
            const std::vector<double>& tvec, 

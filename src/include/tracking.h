@@ -1,18 +1,20 @@
 #include <opencv2/opencv.hpp>
-#include <opencv2/tracking.hpp>
 #include <iostream>
 
 using namespace cv;
 using namespace std;
 
-void trackBallInFrame(Mat &frame, const Mat &background) {
+void trackBallInFrame(Camera& camera) {
+
+    auto frame = camera.currentFrame;
+    auto background = camera.background;
+    auto tracker_pos = camera.current_tracker_position;
+    auto previous_tracker_pos = camera.previous_tracker_position;
+
     if (frame.empty() || background.empty()) {
         cerr << "Error: Frame or background is empty." << endl;
         return;
     }
-
-    Ptr<Tracker> tracker = TrackerCSRT::create();
-    Rect bbox;
 
     // HSV range for the pink ball
     Scalar lower_pink(130, 50, 50);
@@ -37,19 +39,16 @@ void trackBallInFrame(Mat &frame, const Mat &background) {
     // Apply some preprocessing (e.g., dilate and erode to clean up the mask)
     dilate(mask, mask, Mat(), Point(-1, -1), 2);
     erode(mask, mask, Mat(), Point(-1, -1), 2);
-    
-    // Check if the mask is empty
+
     if (mask.empty()) {
         cerr << "Error: Mask is empty." << endl;
         return;
     }
-    
+
     // Find contours to get initial bounding box
     vector<vector<Point>> contours;
     findContours(mask, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
-    // Draw contours on the frame
-    if (contours.empty())
-    {
+    if (contours.empty()) {
         return;
     }
 
@@ -59,32 +58,19 @@ void trackBallInFrame(Mat &frame, const Mat &background) {
     for (size_t i = 0; i < contours.size(); i++) {
         double area = contourArea(contours[i]);
         if (area > areaThreshold) {
-            Point2f center;
             float radius;
-            minEnclosingCircle(contours[i], center,radius);
-            circle(frame, center, static_cast<int>(radius), Scalar(0, 255, 0), 2);
+            minEnclosingCircle(contours[i], tracker_pos, radius);
+            circle(frame, tracker_pos, static_cast<int>(radius), Scalar(0, 255, 0), 2);
+            // Print tracker position
+            cout << "center: " << tracker_pos << endl;
+            previous_tracker_pos = tracker_pos;
+            break;
+        }
+        else
+        {
+            
+            previous_tracker_pos = Point2f(-1, -1);
+            cout << "center: " << previous_tracker_pos << endl;
         }
     }
 }
-
-    /*
-    if (!contours.empty()) {
-        bbox = boundingRect(contours[0]);
-        if (bbox.width > 0 && bbox.height > 0) {
-            tracker->init(frame, bbox);
-
-            // Update the tracker
-            bool ok = tracker->update(frame, bbox);
-            if (ok) {
-                // Tracking success
-                rectangle(frame, bbox, Scalar(255, 0, 0), 2, 1);
-            } else {
-                cerr << "Tracking failed." << endl;
-            }
-        } else {
-            cerr << "Bounding box is empty." << endl;
-        }
-    } else {
-        cerr << "No contours found." << endl;
-    }
-    */

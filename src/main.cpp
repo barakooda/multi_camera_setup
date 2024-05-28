@@ -49,7 +49,7 @@ int main() {
                 // Debug output for frame size
                 //std::cout << "Processing frame of size: " << camera.currentFrame.size() << std::endl;
 
-                trackBallInFrame(camera.currentFrame, camera.background);
+                trackBallInFrame(camera);
 
                 // Display the processed frame
                 cv::imshow("Processed Frame", camera.currentFrame);
