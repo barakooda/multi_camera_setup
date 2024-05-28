@@ -24,9 +24,6 @@ void drawCirclesForContours(Mat &frame, const vector<vector<Point>> &contours, P
         float radius;
         minEnclosingCircle(contour, tracker_pos, radius);
         circle(frame, tracker_pos, static_cast<int>(radius), Scalar(0, 255, 0), 2);
-        // Print tracker position
-        cout << "center: " << tracker_pos << endl;
-        previous_tracker_pos = tracker_pos;
         return;
     }
 
@@ -34,11 +31,22 @@ void drawCirclesForContours(Mat &frame, const vector<vector<Point>> &contours, P
     cout << "center: " << previous_tracker_pos << endl;
 }
 
+void visualizeOpticalFlow(const Point2f &prev_point, const Point2f &curr_point, Mat &frame) {
+    // Calculate the direction vector
+    Point2f direction = curr_point - prev_point;
+    
+    // Scale the direction vector
+    float scaleFactor = 50; // Adjust this factor to make the line longer
+    Point2f extended_point = prev_point + direction * scaleFactor;
+    
+    // Draw the arrowed line
+    arrowedLine(frame, prev_point, extended_point, Scalar(0, 255, 0), 5, 8, 0, 0.3);
+    cout << "Optical Flow: from " << prev_point << " to " << extended_point << endl;
+}
+
 void trackBallInFrame(Camera& camera) {
     Mat& frame = camera.currentFrame;
     Mat& background = camera.background;
-    Point2f& tracker_pos = camera.current_tracker_position;
-    Point2f& previous_tracker_pos = camera.previous_tracker_position;
 
     if (frame.empty() || background.empty()) {
         cerr << "Error: Frame or background is empty." << endl;
@@ -77,9 +85,16 @@ void trackBallInFrame(Camera& camera) {
     float areaThreshold = 50.0f;
     vector<vector<Point>> contours = findContoursInMask(mask, areaThreshold);
     if (!contours.empty()) {
-        drawCirclesForContours(frame, contours, tracker_pos, previous_tracker_pos);
+        {
+            drawCirclesForContours(frame, contours, camera.current_tracker_position, camera.previous_tracker_position);
+        }
+
+        visualizeOpticalFlow(camera.previous_tracker_position, camera.current_tracker_position, frame);
+
+        camera.previous_tracker_position = camera.current_tracker_position;
+        
     } else {
-        previous_tracker_pos = Point2f(-1, -1);
-        cout << "center: " << previous_tracker_pos << endl;
+        camera.previous_tracker_position = Point2f(-1, -1);
+        cout << "center: " << camera.previous_tracker_position << endl;
     }
 }
