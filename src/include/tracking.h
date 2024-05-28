@@ -5,6 +5,35 @@
 using namespace cv;
 using namespace std;
 
+vector<vector<Point>> findContoursInMask(const Mat &mask, float areaThreshold) {
+    vector<vector<Point>> contours;
+    findContours(mask, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
+
+    vector<vector<Point>> filteredContours;
+    for (const auto &contour : contours) {
+        if (contourArea(contour) > areaThreshold) {
+            filteredContours.push_back(contour);
+        }
+    }
+
+    return filteredContours;
+}
+
+void drawCirclesForContours(Mat &frame, const vector<vector<Point>> &contours, Point2f &tracker_pos, Point2f &previous_tracker_pos) {
+    for (const auto &contour : contours) {
+        float radius;
+        minEnclosingCircle(contour, tracker_pos, radius);
+        circle(frame, tracker_pos, static_cast<int>(radius), Scalar(0, 255, 0), 2);
+        // Print tracker position
+        cout << "center: " << tracker_pos << endl;
+        previous_tracker_pos = tracker_pos;
+        return;
+    }
+
+    previous_tracker_pos = Point2f(-1, -1);
+    cout << "center: " << previous_tracker_pos << endl;
+}
+
 void trackBallInFrame(Camera& camera) {
     Mat& frame = camera.currentFrame;
     Mat& background = camera.background;
@@ -45,31 +74,12 @@ void trackBallInFrame(Camera& camera) {
         return;
     }
 
-    // Find contours to get initial bounding box
-    vector<vector<Point>> contours;
-    findContours(mask, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
-    if (contours.empty()) {
+    float areaThreshold = 50.0f;
+    vector<vector<Point>> contours = findContoursInMask(mask, areaThreshold);
+    if (!contours.empty()) {
+        drawCirclesForContours(frame, contours, tracker_pos, previous_tracker_pos);
+    } else {
         previous_tracker_pos = Point2f(-1, -1);
         cout << "center: " << previous_tracker_pos << endl;
-        return;
     }
-
-    float areaThreshold = 50.0f;
-
-    // Draw circles for contours above the area threshold
-    for (size_t i = 0; i < contours.size(); i++) {
-        double area = contourArea(contours[i]);
-        if (area > areaThreshold) {
-            float radius;
-            minEnclosingCircle(contours[i], tracker_pos, radius);
-            circle(frame, tracker_pos, static_cast<int>(radius), Scalar(0, 255, 0), 2);
-            // Print tracker position
-            cout << "center: " << tracker_pos << endl;
-            previous_tracker_pos = tracker_pos;
-            return;
-        }
-    }
-
-    previous_tracker_pos = Point2f(-1, -1);
-    cout << "center: " << previous_tracker_pos << endl;
 }
