@@ -28,9 +28,6 @@ void trackBallInFrame(Mat &frame, const Mat &background) {
     cvtColor(diff, diff, COLOR_BGR2GRAY);
     threshold(diff, foregroundMask, 50, 255, THRESH_BINARY);
 
-    // Debug output for foreground mask size
-    std::cout << "Foreground mask size: " << foregroundMask.size() << std::endl;
-
     // Color keying in HSV
     inRange(hsvFrame, lower_pink, upper_pink, mask);
 
@@ -40,28 +37,54 @@ void trackBallInFrame(Mat &frame, const Mat &background) {
     // Apply some preprocessing (e.g., dilate and erode to clean up the mask)
     dilate(mask, mask, Mat(), Point(-1, -1), 2);
     erode(mask, mask, Mat(), Point(-1, -1), 2);
-
+    
+    // Check if the mask is empty
+    if (mask.empty()) {
+        cerr << "Error: Mask is empty." << endl;
+        return;
+    }
+    
     // Find contours to get initial bounding box
     vector<vector<Point>> contours;
     findContours(mask, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
-    if (!contours.empty()) {
-        bbox = boundingRect(contours[0]);
-        tracker->init(frame, bbox);
-
-        // Update the tracker
-        bool ok = tracker->update(frame, bbox);
-        if (ok) {
-            // Tracking success
-            rectangle(frame, bbox, Scalar(255, 0, 0), 2, 1);
-        }
-    } else {
-        cerr << "No contours found in frame." << endl;
+    // Draw contours on the frame
+    if (contours.empty())
+    {
+        return;
     }
 
-    // Display the frame with tracking
-    //imshow("Tracking", frame);
-    //waitKey(30); // Adjust the delay as needed
+    float areaThreshold = 50.0f;
 
-    // Optional: Save the frame with tracking rectangle
-    // imwrite("tracked_frame.jpg", frame);
+    // Draw circles for contours above the area threshold
+    for (size_t i = 0; i < contours.size(); i++) {
+        double area = contourArea(contours[i]);
+        if (area > areaThreshold) {
+            Point2f center;
+            float radius;
+            minEnclosingCircle(contours[i], center,radius);
+            circle(frame, center, static_cast<int>(radius), Scalar(0, 255, 0), 2);
+        }
+    }
 }
+
+    /*
+    if (!contours.empty()) {
+        bbox = boundingRect(contours[0]);
+        if (bbox.width > 0 && bbox.height > 0) {
+            tracker->init(frame, bbox);
+
+            // Update the tracker
+            bool ok = tracker->update(frame, bbox);
+            if (ok) {
+                // Tracking success
+                rectangle(frame, bbox, Scalar(255, 0, 0), 2, 1);
+            } else {
+                cerr << "Tracking failed." << endl;
+            }
+        } else {
+            cerr << "Bounding box is empty." << endl;
+        }
+    } else {
+        cerr << "No contours found." << endl;
+    }
+    */

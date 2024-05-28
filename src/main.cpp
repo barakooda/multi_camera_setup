@@ -27,7 +27,7 @@ int main() {
         setCameraBackgrounds(cameras, backgroundPath);
 
         // Process the frames for camera 4
-        Camera& camera = cameras[3];
+        Camera& camera = cameras[2];
 
         // Check if background image is loaded correctly
         if (camera.background.empty()) {
@@ -47,7 +47,7 @@ int main() {
                 }
 
                 // Debug output for frame size
-                std::cout << "Processing frame of size: " << camera.currentFrame.size() << std::endl;
+                //std::cout << "Processing frame of size: " << camera.currentFrame.size() << std::endl;
 
                 trackBallInFrame(camera.currentFrame, camera.background);
 
