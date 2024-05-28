@@ -1,0 +1,20 @@
+cmake_minimum_required(VERSION 3.10)
+
+project(ar52_test)
+
+# Enable compiler optimizations
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2 /GL /Oi /Ot /Ob2 /Gy")
+set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG /OPT:REF /OPT:ICF")
+# Specify the path to your OpenCV build directory
+set(OpenCV_DIR "D:/opencv/build")
+
+find_package(OpenCV REQUIRED)
+
+include_directories(${OpenCV_INCLUDE_DIRS})
+include_directories(D:/opencv/source/opencv/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+add_executable(ar52_test main.cpp)
+
+target_link_libraries(ar52_test ${OpenCV_LIBS})
+

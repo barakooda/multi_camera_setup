@@ -1,0 +1,10 @@
+^D:\TEMP\AR51TEST\SRC\BUILD\RELEASE\CMAKEFILES\85F4732DC5AB6EB374A09D49DE31EE60\GENERATE.STAMP.RULE
+setlocal
+C:\Python311\Lib\site-packages\cmake\data\bin\cmake.exe -SD:/temp/ar51test/src -BD:/temp/ar51test/src/build/release --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file D:/temp/ar51test/src/build/release/ar52_test.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
