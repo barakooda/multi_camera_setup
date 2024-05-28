@@ -1,15 +1,15 @@
 #include <opencv2/opencv.hpp>
 #include <iostream>
+#include "camera.h"
 
 using namespace cv;
 using namespace std;
 
 void trackBallInFrame(Camera& camera) {
-
-    auto frame = camera.currentFrame;
-    auto background = camera.background;
-    auto tracker_pos = camera.current_tracker_position;
-    auto previous_tracker_pos = camera.previous_tracker_position;
+    Mat& frame = camera.currentFrame;
+    Mat& background = camera.background;
+    Point2f& tracker_pos = camera.current_tracker_position;
+    Point2f& previous_tracker_pos = camera.previous_tracker_position;
 
     if (frame.empty() || background.empty()) {
         cerr << "Error: Frame or background is empty." << endl;
@@ -49,6 +49,8 @@ void trackBallInFrame(Camera& camera) {
     vector<vector<Point>> contours;
     findContours(mask, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
     if (contours.empty()) {
+        previous_tracker_pos = Point2f(-1, -1);
+        cout << "center: " << previous_tracker_pos << endl;
         return;
     }
 
@@ -64,13 +66,10 @@ void trackBallInFrame(Camera& camera) {
             // Print tracker position
             cout << "center: " << tracker_pos << endl;
             previous_tracker_pos = tracker_pos;
-            break;
-        }
-        else
-        {
-            
-            previous_tracker_pos = Point2f(-1, -1);
-            cout << "center: " << previous_tracker_pos << endl;
+            return;
         }
     }
+
+    previous_tracker_pos = Point2f(-1, -1);
+    cout << "center: " << previous_tracker_pos << endl;
 }
