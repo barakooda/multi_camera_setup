@@ -60,9 +60,12 @@ int main() {
 
         // Print the current index
         std::cout << "index: " << index << std::endl;
+        
         for (auto camera : cameras) {
         // Print current position from all cameras
-        std::cout << "Camera" << camera.index << ": Current position: " << camera.current_tracker_position << std::endl;
+            std::cout << "Camera" << camera.index << ": Current position: " << camera.current_tracker_position << std::endl;
+        
+            visualizeOutput(camera);
         }
     }
 

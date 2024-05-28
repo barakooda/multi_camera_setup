@@ -23,7 +23,7 @@ void drawCirclesForContours(Mat &frame, const vector<vector<Point>> &contours, P
     for (const auto &contour : contours) {
         float radius;
         minEnclosingCircle(contour, tracker_pos, radius);
-        //circle(frame, tracker_pos, static_cast<int>(radius), Scalar(0, 255, 0), 2);
+        circle(frame, tracker_pos, static_cast<int>(radius), Scalar(0, 255, 0), 2);
         return;
     }
 

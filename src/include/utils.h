@@ -31,3 +31,25 @@ void setCameraBackgrounds(std::vector<Camera>& cameras, const std::string& backg
         }
     }
 }
+
+
+void visualizeOutput(Camera &camera)
+{
+        std::string window_name = "Camera" + std::to_string(camera.index);
+
+        int x_pos = (camera.index - 1) * 690;
+        int y_pos = 0;
+
+        if (camera.index > 2) {
+            x_pos = (camera.index - 3) * 690;
+            y_pos = 512;
+        }
+
+        cv::Mat resized_image;
+        cv::resize(camera.currentFrame, resized_image, cv::Size(690, 512), 0, 0, cv::INTER_AREA);
+
+        imshow(window_name, resized_image);
+        resizeWindow(window_name, 690, 512);
+        moveWindow(window_name, x_pos, y_pos);
+        waitKey(1);
+}
