@@ -17,7 +17,7 @@ void calculate_current_position_and_speed(cv::Mat &mask, cv::Mat &frame, Camera 
         }
         camera.tracker_speed = camera.current_tracker_position - camera.previous_tracker_position;
 
-        visualizeOpticalFlow(camera.previous_tracker_position, camera.current_tracker_position, frame);
+        //visualizeOpticalFlow(camera.previous_tracker_position, camera.current_tracker_position, frame);
 
         camera.previous_tracker_position = camera.current_tracker_position;
     }
@@ -83,13 +83,11 @@ void trackBallInFrame(Camera &camera, int frame_index, int cameras_num)
     {
         tracker_position_by_tracking(camera);
 
-        //fusion with optical flow
-        // optical_flow_position_and_speed(camera);
     }
     else 
     {
         camera.current_tracker_position = camera.previous_tracker_position + camera.tracker_speed;
-        visualizeOpticalFlow(camera.previous_tracker_position, camera.current_tracker_position, camera.currentFrame);
+        //visualizeOpticalFlow(camera.previous_tracker_position, camera.current_tracker_position, camera.currentFrame);
         camera.previous_tracker_position = camera.current_tracker_position;
     }
     

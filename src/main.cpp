@@ -54,7 +54,7 @@ int main() {
     std::vector<std::thread> threads(cameras_num);
 
     std::ofstream myfile;
-    myfile.open("D:/temp/ar51test/3d_points.csv", std::ios_base::app);
+    myfile.open("D:/temp/ar51test/csv_files/ball_pos_real.csv");
 
     for (int frame_index = 0; frame_index < video_length; frame_index++) 
     {
