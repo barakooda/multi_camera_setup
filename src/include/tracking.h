@@ -79,17 +79,17 @@ void trackBallInFrame(Camera &camera, int frame_index, int cameras_num)
 
     camera.is_tracking_active = check_tracking_active(frame_index, cameras_num, camera);
 
-    if (!camera.is_tracking_active)
-    {
+   // if (camera.is_tracking_active)
+  //  {
         tracker_position_by_tracking(camera);
 
-    }
-    else 
-    {
-        camera.current_tracker_position = camera.previous_tracker_position + camera.tracker_speed;
+  //  }
+   // else 
+  //  {
+   //     camera.current_tracker_position = camera.previous_tracker_position + camera.tracker_speed;
         //visualizeOpticalFlow(camera.previous_tracker_position, camera.current_tracker_position, camera.currentFrame);
-        camera.previous_tracker_position = camera.current_tracker_position;
-    }
+   //     camera.previous_tracker_position = camera.current_tracker_position;
+   // /}
     
     
 
