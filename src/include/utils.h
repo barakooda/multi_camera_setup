@@ -89,11 +89,11 @@ vector<vector<Point>> findContoursInMask(const Mat &mask, float areaThreshold) {
     return filteredContours;
 }
 
-void drawCirclesForContours(Mat &frame, const vector<vector<Point>> &contours, Point2f &tracker_pos, Point2f &previous_tracker_pos) {
+void get_PositionFromContours(Mat &frame, const vector<vector<Point>> &contours, Point2f &tracker_pos, Point2f &previous_tracker_pos) {
     for (const auto &contour : contours) {
         float radius;
         minEnclosingCircle(contour, tracker_pos, radius);
-        circle(frame, tracker_pos, static_cast<int>(radius), Scalar(0, 255, 0), 2);
+        //circle(frame, tracker_pos, static_cast<int>(radius), Scalar(0, 255, 0), 2);
         return;
     }
 

@@ -15,6 +15,7 @@ public:
     cv::VideoCapture capture; // Video capture object
     cv::Point2f current_tracker_position; // Center of the ball
     cv::Point2f previous_tracker_position; // Previous center of the ball
+    cv::Point2f tracker_speed; // 2D speed of the ball
     int index; // Index of the camera
     bool is_tracking_active = false;
 

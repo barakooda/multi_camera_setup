@@ -6,16 +6,36 @@
 using namespace cv;
 using namespace std;
 
-
-void trackBallInFrame(Camera &camera, int frame_index, int cameras_num)
+void calculate_current_position_and_speed(cv::Mat &mask, cv::Mat &frame, Camera &camera)
 {
+    float areaThreshold = 50.0f;
+    vector<vector<Point>> contours = findContoursInMask(mask, areaThreshold);
+    if (!contours.empty())
+    {
+        {
+            get_PositionFromContours(frame, contours, camera.current_tracker_position, camera.previous_tracker_position);
+        }
+        camera.tracker_speed = camera.current_tracker_position - camera.previous_tracker_position;
 
-    camera.is_tracking_active = check_tracking_active(frame_index, cameras_num, camera);
+        visualizeOpticalFlow(camera.previous_tracker_position, camera.current_tracker_position, frame);
 
-    Mat& frame = camera.currentFrame;
-    Mat& background = camera.background;
+        camera.previous_tracker_position = camera.current_tracker_position;
+    }
+    else
+    {
+        // camera.previous_tracker_position = Point2f(-1, -1);
+        cout << "previous tracker position: " << camera.previous_tracker_position << endl;
+    }
+}
 
-    if (frame.empty() || background.empty()) {
+void tracker_position_by_tracking(Camera &camera)
+{
+    
+    Mat &frame = camera.currentFrame;
+    Mat &background = camera.background;
+
+    if (frame.empty() || background.empty())
+    {
         cerr << "Error: Frame or background is empty." << endl;
         return;
     }
@@ -44,26 +64,40 @@ void trackBallInFrame(Camera &camera, int frame_index, int cameras_num)
     dilate(mask, mask, Mat(), Point(-1, -1), 2);
     erode(mask, mask, Mat(), Point(-1, -1), 2);
 
-    if (mask.empty()) {
+    if (mask.empty())
+    {
         cerr << "Error: Mask is empty." << endl;
         return;
     }
 
-    float areaThreshold = 50.0f;
-    vector<vector<Point>> contours = findContoursInMask(mask, areaThreshold);
-    if (!contours.empty()) {
-        {
-            drawCirclesForContours(frame, contours, camera.current_tracker_position, camera.previous_tracker_position);
-        }
+    calculate_current_position_and_speed(mask, frame, camera);
+}
 
-        visualizeOpticalFlow(camera.previous_tracker_position, camera.current_tracker_position, frame);
 
-        camera.previous_tracker_position = camera.current_tracker_position;
-        
-    } else {
-        camera.previous_tracker_position = Point2f(-1, -1);
-        cout << "center: " << camera.previous_tracker_position << endl;
+void trackBallInFrame(Camera &camera, int frame_index, int cameras_num)
+{
+
+    camera.is_tracking_active = check_tracking_active(frame_index, cameras_num, camera);
+
+    if (!camera.is_tracking_active)
+    {
+        tracker_position_by_tracking(camera);
+
+        //fusion with optical flow
+        // optical_flow_position_and_speed(camera);
+
     }
+
+    
+    else 
+    {
+        camera.current_tracker_position = camera.previous_tracker_position + camera.tracker_speed;
+        visualizeOpticalFlow(camera.previous_tracker_position, camera.current_tracker_position, camera.currentFrame);
+        camera.previous_tracker_position = camera.current_tracker_position;
+    }
+    
+    
+
 }
 
 

@@ -49,7 +49,7 @@ int main() {
     setCameraBackgrounds(cameras, backgroundPath);
 
     // Get the length of the video
-    int video_length = int(cameras[0].capture.get(cv::CAP_PROP_FRAME_COUNT)) / 20;
+    int video_length = int(cameras[0].capture.get(cv::CAP_PROP_FRAME_COUNT)); // testing with 20 frames need to be removed
     
     int cameras_num = int(cameras.size());
 
@@ -71,11 +71,11 @@ int main() {
         }
 
         // Print the current index
-        std::cout << "frame index: " << frame_index << std::endl;
+        //std::cout << "frame index: " << frame_index << std::endl;
         
         for (auto camera : cameras) {
             // Print current position from all cameras
-            std::cout << "Camera" << camera.index << ": Is tracker active " << camera.is_tracking_active << std::endl;
+            //std::cout << "Camera" << camera.index << ": Is tracker active " << camera.is_tracking_active << std::endl;
         
             visualizeOutput(camera);
         }
