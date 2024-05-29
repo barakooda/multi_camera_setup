@@ -85,10 +85,7 @@ void trackBallInFrame(Camera &camera, int frame_index, int cameras_num)
 
         //fusion with optical flow
         // optical_flow_position_and_speed(camera);
-
     }
-
-    
     else 
     {
         camera.current_tracker_position = camera.previous_tracker_position + camera.tracker_speed;

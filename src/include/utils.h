@@ -114,4 +114,53 @@ void visualizeOpticalFlow(const Point2f &prev_point, const Point2f &curr_point, 
     //cout << "Optical Flow: from " << prev_point << " to " << extended_point << endl;
 }
 
+
+
+cv::Point3d triangulatePoint(const std::vector<Camera>& cameras, const std::vector<cv::Point2d>& imagePoints) {
+    if (cameras.size() != imagePoints.size()) {
+        throw std::invalid_argument("Number of cameras must match the number of image points.");
+    }
+
+    std::vector<cv::Mat> projectionMatrices;
+    for (const auto& camera : cameras) {
+        projectionMatrices.push_back(camera.getProjectionMatrix());
+    }
+
+    // Accumulator for homogeneous points
+    cv::Mat points4D = cv::Mat::zeros(4, 1, CV_64F);
+
+    // Convert cv::Point2d to cv::Mat
+    std::vector<cv::Mat> imagePointsMat;
+    for (const auto& point : imagePoints) {
+        cv::Mat ptMat(2, 1, CV_64F);
+        ptMat.at<double>(0) = point.x;
+        ptMat.at<double>(1) = point.y;
+        imagePointsMat.push_back(ptMat);
+    }
+
+    // Triangulate points using all pairs of cameras
+    int pair_count = 0;
+    for (size_t i = 0; i < cameras.size() - 1; ++i) {
+        for (size_t j = i + 1; j < cameras.size(); ++j) {
+            cv::Mat points4DNew;
+            cv::triangulatePoints(projectionMatrices[i], projectionMatrices[j], imagePointsMat[i], imagePointsMat[j], points4DNew);
+            points4D += points4DNew;
+            pair_count++;
+        }
+    }
+    points4D /= pair_count;
+
+    // Convert from homogeneous coordinates to 3D
+    cv::Point3d point3D(
+        points4D.at<double>(0) / points4D.at<double>(3),
+        points4D.at<double>(1) / points4D.at<double>(3),
+        points4D.at<double>(2) / points4D.at<double>(3)
+    );
+
+    return point3D;
+}
+
+
+
+
 #endif

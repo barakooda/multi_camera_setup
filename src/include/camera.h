@@ -56,6 +56,25 @@ public:
     void setBackground(const cv::Mat& bg) {
         background = bg.clone();
     }
+
+// Method to get projection matrix
+    cv::Mat getProjectionMatrix() const {
+        cv::Mat R;
+        cv::Rodrigues(rvec, R); // Convert rotation vector to rotation matrix
+        int rows = static_cast<int>(K.size());
+        int cols = static_cast<int>(K[0].size());
+        cv::Mat K_mat(rows, cols, CV_64F);
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j < cols; ++j) {
+                K_mat.at<double>(i, j) = K[i][j];
+            }
+        }
+        cv::Mat t_mat(tvec);
+        cv::Mat Rt;
+        cv::hconcat(R, t_mat, Rt); // [R|t]
+        return K_mat * Rt; // K * [R|t]
+    }
+
 };
 
 #endif // CAMERA_H
