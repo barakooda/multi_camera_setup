@@ -5,16 +5,29 @@
 #include "camera_parameters.h"
 #include "utils.h"
 #include "tracking.h"
+#include "main.h"
 
 // Function to process a camera's frame
-void processCameraFrame(Camera& camera, int index) {
+void processCameraFrame(Camera& camera, int frame_index,int cameras_num) {
     camera.readNextFrame();
     if (camera.currentFrame.empty()) {
         std::cerr << "Error: Read an empty frame for camera: " << camera.name << std::endl;
         return;
     }
-    trackBallInFrame(camera);
+    trackBallInFrame(camera,frame_index,cameras_num);
 }
+
+
+void Initialize_cameras_parameters(std::vector<CameraData> &cameraParams, std::vector<Camera> &cameras)
+{
+    int index = 1;
+    for (const auto &param : cameraParams)
+    {
+        cameras.emplace_back(param.name, param.tvec, param.rvec, param.K, index);
+        index++;
+    }
+}
+
 
 int main() {
     // Load camera parameters from JSON file
@@ -23,11 +36,7 @@ int main() {
     std::vector<Camera> cameras;
 
     // Initialize cameras from loaded parameters
-    unsigned int index = 1;
-    for (const auto& param : cameraParams) {
-        cameras.emplace_back(param.name, param.tvec, param.rvec, param.K,index);
-        index++;
-    }
+    Initialize_cameras_parameters(cameraParams, cameras);
 
     // Base path for videos and backgrounds
     std::string videoBasePath = "D:/temp/ar51test/videos/";
@@ -40,15 +49,18 @@ int main() {
     setCameraBackgrounds(cameras, backgroundPath);
 
     // Get the length of the video
-    int length = int(cameras[0].capture.get(cv::CAP_PROP_FRAME_COUNT));
-    std::cout << "Length of the video: " << length << std::endl;
+    int video_length = int(cameras[0].capture.get(cv::CAP_PROP_FRAME_COUNT)) / 20;
+    
+    int cameras_num = int(cameras.size());
 
-    std::vector<std::thread> threads(cameras.size());
+    std::cout << "Length of the video: " << video_length << std::endl;
 
-    for (int index = 0; index < length; index++) {
+    std::vector<std::thread> threads(cameras_num);
+
+    for (int frame_index = 0; frame_index < video_length; frame_index++) {
         // Create a thread for each camera to process its current frame
-        for (size_t i = 0; i < cameras.size(); ++i) {
-            threads[i] = std::thread(processCameraFrame, std::ref(cameras[i]), index);
+        for (int i = 0; i < cameras_num; ++i) {
+            threads[i] = std::thread(processCameraFrame, std::ref(cameras[i]), frame_index,cameras_num);
         }
 
         // Wait for all threads to complete
@@ -59,11 +71,11 @@ int main() {
         }
 
         // Print the current index
-        std::cout << "index: " << index << std::endl;
+        std::cout << "frame index: " << frame_index << std::endl;
         
         for (auto camera : cameras) {
-        // Print current position from all cameras
-            std::cout << "Camera" << camera.index << ": Current position: " << camera.current_tracker_position << std::endl;
+            // Print current position from all cameras
+            std::cout << "Camera" << camera.index << ": Is tracker active " << camera.is_tracking_active << std::endl;
         
             visualizeOutput(camera);
         }
@@ -78,3 +90,5 @@ int main() {
 
     return 0;
 }
+
+
