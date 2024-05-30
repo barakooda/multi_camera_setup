@@ -62,18 +62,24 @@ void processParallelCameraFrames(std::vector<Camera> &cameras,int &cameras_num, 
         // Save the 3D point to a CSV file
         myfile << point3D.x << "," << point3D.y << "," << point3D.z << "\n";
 
+        /*
         // Visualize the output
         for (auto& camera : cameras) {
             visualizeOutput(camera);
         }
+        */
 
+        /*
         // Debug output
         std::cout << "position at frame " << frame_index << ": " << point3D << std::endl;
         for (auto& camera : cameras) {
             std::cout << "Camera " << camera.index << " is tracking active: " << camera.is_detection_active << std::endl;
         }
+        */
     }
     myfile.close();
+    
+    std::cout << "The process is done successfully" << std::endl;
 }
 
 
@@ -104,7 +110,7 @@ int main() {
 
    processParallelCameraFrames(cameras,cameras_num, video_length);
 
-    
+
 
     return 0;
 }

@@ -20,14 +20,15 @@ void calculateCurrentPosition(cv::Mat &mask, cv::Mat &frame, Camera &camera)
     }
     else
     {
-        cout << "previous tracker position: " << camera.previous_tracker_position << endl;
+        //cout << "previous tracker position: " << camera.previous_tracker_position << endl;
+        camera.current_tracker_position = camera.previous_tracker_position + camera.tracker_speed;
     }
 }
 
 void calculateTrackerSpeed(Camera &camera, cv::Mat &frame)
 {
     camera.tracker_speed = camera.current_tracker_position - camera.previous_tracker_position;
-    visualizeSpeed(camera.previous_tracker_position, camera.current_tracker_position, frame);
+    //visualizeSpeed(camera.previous_tracker_position, camera.current_tracker_position, frame);
 }
 
 void tracker_by_detection(Camera &camera)
