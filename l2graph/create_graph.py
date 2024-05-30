@@ -35,4 +35,9 @@ plt.ylabel('L2 Distance (mm)')
 plt.title('L2 Distance between Vectors from Two Files (Zoomed in to 200 mm)')
 plt.ylim(0, 200)  # Set the y-axis limit to zoom in
 plt.grid(True)
+
+# Save the plot as an image file
+output_file_path = r"D:\temp\ar51test\l2graph\l2_distance_plot.png"
+plt.savefig(output_file_path)
+
 plt.show()
