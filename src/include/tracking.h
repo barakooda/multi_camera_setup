@@ -6,29 +6,31 @@
 using namespace cv;
 using namespace std;
 
-void calculate_current_position_and_speed(cv::Mat &mask, cv::Mat &frame, Camera &camera)
+void calculateCurrentPosition(cv::Mat &mask, cv::Mat &frame, Camera &camera)
 {
     float areaThreshold = 50.0f;
-    vector<vector<Point>> contours = findContoursInMask(mask, areaThreshold);
-    if (!contours.empty())
+    vector<Point> contour = findContoursInMask(mask, areaThreshold);
+
+    if (!contour.empty())
     {
         {
-            get_PositionFromContours(frame, contours, camera.current_tracker_position, camera.previous_tracker_position);
+            get_PositionFromContour(frame, contour, camera.current_tracker_position, camera.previous_tracker_position);
         }
-        camera.tracker_speed = camera.current_tracker_position - camera.previous_tracker_position;
-
-        //visualizeOpticalFlow(camera.previous_tracker_position, camera.current_tracker_position, frame);
-
-        camera.previous_tracker_position = camera.current_tracker_position;
+        
     }
     else
     {
-        // camera.previous_tracker_position = Point2f(-1, -1);
         cout << "previous tracker position: " << camera.previous_tracker_position << endl;
     }
 }
 
-void tracker_position_by_tracking(Camera &camera)
+void calculateTrackerPositionSpeed(Camera &camera, cv::Mat &frame)
+{
+    camera.tracker_speed = camera.current_tracker_position - camera.previous_tracker_position;
+    visualizeSpeed(camera.previous_tracker_position, camera.current_tracker_position, frame);
+}
+
+void tracker_by_detection(Camera &camera)
 {
     
     Mat &frame = camera.currentFrame;
@@ -70,28 +72,40 @@ void tracker_position_by_tracking(Camera &camera)
         return;
     }
 
-    calculate_current_position_and_speed(mask, frame, camera);
+    calculateCurrentPosition(mask, frame, camera);
+
+    calculateTrackerPositionSpeed(camera, frame);
+
+    camera.previous_tracker_position = camera.current_tracker_position;
 }
 
 
 void trackBallInFrame(Camera &camera, int frame_index, int cameras_num)
 {
 
-    camera.is_tracking_active = check_tracking_active(frame_index, cameras_num, camera);
+    //active detection flag for each camera based on the frame index and camera index for future use.
+    camera.is_detection_active = check_detection_active(frame_index, cameras_num, camera);
 
-   // if (camera.is_tracking_active)
-  //  {
-        tracker_position_by_tracking(camera);
+        tracker_by_detection(camera);
 
-  //  }
-   // else 
-  //  {
-   //     camera.current_tracker_position = camera.previous_tracker_position + camera.tracker_speed;
-        //visualizeOpticalFlow(camera.previous_tracker_position, camera.current_tracker_position, camera.currentFrame);
-   //     camera.previous_tracker_position = camera.current_tracker_position;
-   // /}
-    
-    
+        //Was not able to get good results from the optical flow and kalman filter.
+        //TODO learn both to complete the task.
+
+        /*
+        First frame: detection in all cameras.
+        2nd frame: detection in camera 1, optical flow all cameras.
+        3nd frame: detection in camera 2, optical flow all cameras.
+        4nd frame: detection in camera 3, optical flow all cameras.
+        5nd frame: detection in camera 4, optical flow all cameras.
+        …
+        N+1 frame: detection in camera Modulo(N,4), optical flow all cameras.
+        When a detection and kalman is performed you need to combine the two using data fusion.
+            Data Fusion:
+        ●	Use or implement a filter (e.g. Kalman) to combine&integrate the data from the 
+        optical flow and the detection system, primarily for frames where both data types are available.
+
+        */
+   
 
 }
 

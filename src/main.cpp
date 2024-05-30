@@ -6,6 +6,7 @@
 #include "camera_parameters.h"
 #include "utils.h"
 #include "tracking.h"
+#include "main.h"
 
 // Function to process a camera's frame
 void processCameraFrame(Camera& camera, int frame_index, int cameras_num) {
@@ -17,6 +18,7 @@ void processCameraFrame(Camera& camera, int frame_index, int cameras_num) {
     trackBallInFrame(camera, frame_index, cameras_num);
 }
 
+// Function to initialize cameras from loaded parameters
 void Initialize_cameras_parameters(std::vector<CameraData>& cameraParams, std::vector<Camera>& cameras) {
     int index = 1;
     for (const auto& param : cameraParams) {
@@ -24,6 +26,57 @@ void Initialize_cameras_parameters(std::vector<CameraData>& cameraParams, std::v
         index++;
     }
 }
+
+void processParallelCameraFrames(std::vector<Camera> &cameras,int &cameras_num, int video_length)
+{
+
+    // Open a csv file to save the 3d points
+    std::ofstream myfile;
+    myfile.open("D:/temp/ar51test/csv_files/ball_pos_real.csv");
+    
+    // Create thread for each camera
+    std::vector<std::thread> threads(cameras_num);
+    // Process each frame of the video
+    for (int frame_index = 0; frame_index < video_length; frame_index++) 
+    {
+        // Create a thread for each camera to process its current frame
+        for (int i = 0; i < cameras_num; ++i) {
+            threads[i] = std::thread(processCameraFrame, std::ref(cameras[i]), frame_index, cameras_num);
+        }
+
+        // Wait for all threads to complete
+        for (auto& thread : threads) {
+            if (thread.joinable()) {
+                thread.join();
+            }
+        }
+
+        // Get 2D points from all cameras
+        std::vector<cv::Point2d> imagePoints;
+        for (auto& camera : cameras) {
+            imagePoints.push_back(camera.current_tracker_position);
+        }
+
+        // Perform triangulation
+        cv::Point3d point3D = triangulatePoint(cameras, imagePoints);
+        
+        // Save the 3D point to a CSV file
+        myfile << point3D.x << "," << point3D.y << "," << point3D.z << "\n";
+
+        // Visualize the output
+        for (auto& camera : cameras) {
+            visualizeOutput(camera);
+        }
+
+        // Debug output
+        std::cout << "position at frame " << frame_index << ": " << point3D << std::endl;
+        for (auto& camera : cameras) {
+            std::cout << "Camera " << camera.index << " is tracking active: " << camera.is_detection_active << std::endl;
+        }
+    }
+    myfile.close();
+}
+
 
 int main() {
     // Load camera parameters from JSON file
@@ -47,62 +100,14 @@ int main() {
     // Get the length of the video
     int video_length = static_cast<int>(cameras[0].capture.get(cv::CAP_PROP_FRAME_COUNT)); // testing with 20 frames need to be removed
     
+    // Get number of cameras
     int cameras_num = static_cast<int>(cameras.size());
 
-    std::cout << "Length of the video: " << video_length << std::endl;
+   processParallelCameraFrames(cameras,cameras_num, video_length);
 
-    std::vector<std::thread> threads(cameras_num);
-
-    std::ofstream myfile;
-    myfile.open("D:/temp/ar51test/csv_files/ball_pos_real.csv");
-
-    for (int frame_index = 0; frame_index < video_length; frame_index++) 
-    {
-        // Create a thread for each camera to process its current frame
-        for (int i = 0; i < cameras_num; ++i) {
-            threads[i] = std::thread(processCameraFrame, std::ref(cameras[i]), frame_index, cameras_num);
-        }
-
-        // Wait for all threads to complete
-        for (auto& thread : threads) {
-            if (thread.joinable()) {
-                thread.join();
-            }
-        }
-
-        // Extract 2D points from all cameras
-        std::vector<cv::Point2d> imagePoints;
-        for (auto& camera : cameras) {
-            imagePoints.push_back(camera.current_tracker_position);
-        }
-
-        // Perform triangulation
-        try {
-            cv::Point3d point3D = triangulatePoint(cameras, imagePoints);
-            std::cout << "3D Coordinates of the ball at frame " << frame_index << ": " << point3D << std::endl;
-            //save the 3d point into a csv file
-            
-            
-            myfile << point3D.x << "," << point3D.y << "," << point3D.z << "\n";
-            
-
-        } catch (const std::exception& e) {
-            std::cerr << "Error: " << e.what() << std::endl;
-        }
-
-        // Print current position from all cameras
-        for (auto& camera : cameras) {
-            visualizeOutput(camera);
-        }
-    }
-    myfile.close();
-
-    // Release all videos
-    for (auto& camera : cameras) {
-        camera.releaseVideo();
-    }
-
-    std::cout << "All videos processed successfully." << std::endl;
+    
 
     return 0;
 }
+
+

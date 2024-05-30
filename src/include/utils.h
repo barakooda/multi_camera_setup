@@ -35,7 +35,7 @@ void setCameraBackgrounds(std::vector<Camera>& cameras, const std::string& backg
     }
 }
 
-
+//function to visualize the output
 void visualizeOutput(Camera &camera)
 {
         std::string window_name = "Camera" + std::to_string(camera.index);
@@ -57,12 +57,9 @@ void visualizeOutput(Camera &camera)
         waitKey(1);
 }
 
-
-bool check_tracking_active(int frame_index, int cameras_num, Camera &camera)
+// Function to check if the tracking is active
+bool check_detection_active(int frame_index, int cameras_num, Camera &camera)
 {
-    // std::cout << "Camera index: " << camera.index << std::endl;
-    // std::cout << "Processing frame " << frame_index << std::endl;
-    // std::cout << "Number of cameras: " << cameras_num << std::endl;
 
     int active_index = frame_index % cameras_num;
     if (active_index == 0)
@@ -71,37 +68,40 @@ bool check_tracking_active(int frame_index, int cameras_num, Camera &camera)
     }
     return (camera.index == active_index);
 
-    // std::cout << "is_tracking_active: " << is_tracking_active << std::endl<< std::endl;
 }
 
 
-vector<vector<Point>> findContoursInMask(const Mat &mask, float areaThreshold) {
+vector<Point> findContoursInMask(const Mat &mask, float areaThreshold) {
     vector<vector<Point>> contours;
     findContours(mask, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
 
-    vector<vector<Point>> filteredContours;
+    vector<Point> filteredContour;
+
     for (const auto &contour : contours) {
         if (contourArea(contour) > areaThreshold) {
-            filteredContours.push_back(contour);
+            filteredContour = contour;
+            break;
         }
     }
 
-    return filteredContours;
+    return filteredContour;
 }
 
-void get_PositionFromContours(Mat &frame, const vector<vector<Point>> &contours, Point2f &tracker_pos, Point2f &previous_tracker_pos) {
-    for (const auto &contour : contours) {
-        float radius;
-        minEnclosingCircle(contour, tracker_pos, radius);
-        //circle(frame, tracker_pos, static_cast<int>(radius), Scalar(0, 255, 0), 2);
-        return;
-    }
-
-    previous_tracker_pos = Point2f(-1, -1);
-    //cout << "center: " << previous_tracker_pos << endl;
+cv::Point2f get_PositionFromContour(Mat &frame, vector<Point> &contour, Point2f &tracker_pos, Point2f &previous_tracker_pos) 
+{
+    float radius;
+    // Get the minimum enclosing circle
+    minEnclosingCircle(contour, tracker_pos, radius);
+    
+    // Draw the circle
+    cv::Point tracker_pos_int = cv::Point(cvRound(tracker_pos.x), cvRound(tracker_pos.y));;
+    circle(frame, tracker_pos_int, cvRound(radius), Scalar(0, 255, 0), 2); 
+    
+    return tracker_pos;
 }
 
-void visualizeOpticalFlow(const Point2f &prev_point, const Point2f &curr_point, Mat &frame) {
+
+void visualizeSpeed(const Point2f &prev_point, const Point2f &curr_point, Mat &frame) {
     // Calculate the direction vector
     Point2f direction = curr_point - prev_point;
     
@@ -161,6 +161,27 @@ cv::Point3d triangulatePoint(const std::vector<Camera>& cameras, const std::vect
 }
 
 
+cv::Point2f trackPointOpticalFlow(const cv::Mat& previousFrame, const cv::Mat& currentFrame, const cv::Point2f& previousPoint) {
+    std::vector<cv::Point2f> previousPoints(1, previousPoint);
+    std::vector<cv::Point2f> currentPoints;
+    std::vector<uchar> status;
+    std::vector<float> err;
+
+    // Parameters for cv::calcOpticalFlowPyrLK
+    cv::Size winSize = cv::Size(128, 128);
+    int maxLevel = 2;
+    cv::TermCriteria criteria = cv::TermCriteria(cv::TermCriteria::EPS | cv::TermCriteria::COUNT, 10, 0.03);
+
+    // Calculate optical flow to get the new point position
+    cv::calcOpticalFlowPyrLK(previousFrame, currentFrame, previousPoints, currentPoints, status, err, winSize, maxLevel, criteria);
+
+    // Check if the flow was found
+    if (status[0] == 1) {
+        return currentPoints[0];
+    } else {
+        return previousPoint;
+    }
+}
 
 
 #endif

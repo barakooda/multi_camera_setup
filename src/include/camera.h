@@ -17,7 +17,7 @@ public:
     cv::Point2f previous_tracker_position; // Previous center of the ball
     cv::Point2f tracker_speed; // 2D speed of the ball
     int index; // Index of the camera
-    bool is_tracking_active = false;
+    bool is_detection_active = false;
 
     Camera(const std::string& name, 
            const std::vector<double>& tvec, 
