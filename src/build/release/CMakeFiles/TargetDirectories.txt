@@ -1,3 +1,0 @@
-D:/temp/ar51test/src/build/release/CMakeFiles/ar52_test.dir
-D:/temp/ar51test/src/build/release/CMakeFiles/ALL_BUILD.dir
-D:/temp/ar51test/src/build/release/CMakeFiles/ZERO_CHECK.dir
