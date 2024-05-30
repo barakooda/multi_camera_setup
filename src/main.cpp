@@ -6,7 +6,6 @@
 #include "camera_parameters.h"
 #include "utils.h"
 #include "tracking.h"
-#include "main.h"
 
 // Function to process a camera's frame
 void processCameraFrame(Camera& camera, int frame_index, int cameras_num) {

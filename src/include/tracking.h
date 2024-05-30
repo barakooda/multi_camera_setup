@@ -24,7 +24,7 @@ void calculateCurrentPosition(cv::Mat &mask, cv::Mat &frame, Camera &camera)
     }
 }
 
-void calculateTrackerPositionSpeed(Camera &camera, cv::Mat &frame)
+void calculateTrackerSpeed(Camera &camera, cv::Mat &frame)
 {
     camera.tracker_speed = camera.current_tracker_position - camera.previous_tracker_position;
     visualizeSpeed(camera.previous_tracker_position, camera.current_tracker_position, frame);
@@ -56,6 +56,8 @@ void tracker_by_detection(Camera &camera)
     cvtColor(diff, diff, COLOR_BGR2GRAY);
     threshold(diff, foregroundMask, 50, 255, THRESH_BINARY);
 
+   
+
     // Color keying in HSV
     inRange(hsvFrame, lower_pink, upper_pink, mask);
 
@@ -66,6 +68,8 @@ void tracker_by_detection(Camera &camera)
     dilate(mask, mask, Mat(), Point(-1, -1), 2);
     erode(mask, mask, Mat(), Point(-1, -1), 2);
 
+    
+
     if (mask.empty())
     {
         cerr << "Error: Mask is empty." << endl;
@@ -74,7 +78,7 @@ void tracker_by_detection(Camera &camera)
 
     calculateCurrentPosition(mask, frame, camera);
 
-    calculateTrackerPositionSpeed(camera, frame);
+    calculateTrackerSpeed(camera, frame);
 
     camera.previous_tracker_position = camera.current_tracker_position;
 }
