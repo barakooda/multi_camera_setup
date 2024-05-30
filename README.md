@@ -77,8 +77,8 @@ cv_learn/
 This project is still a work in progress. Future improvements and learning objectives include:
 
 - Implementing Optical Flow.
-- Integrating a Kalman Filter for tracking.
-- Combining detection and Optical Flow using a Kalman Filter for data fusion.
+- Kalman Filter.
+- Combining detection and Optical Flow outputs in Kalmain filter.
 
 
 
