@@ -16,7 +16,7 @@ Welcome to the Multi-Camera Setup project! This repository contains code for set
 
 ## Introduction
 
-This project demonstrates a multi-camera system for tracking a moving object (e.g., a ball) in real-time using OpenCV and C++. It includes camera calibration, video processing, and 3D point triangulation.
+This project demonstrates a multi-camera system for tracking a moving object (e.g., a ball) in real-time using OpenCV and C++. It includes camera calibration (given), video processing, and 3D point triangulation.
 
 ## Features
 
