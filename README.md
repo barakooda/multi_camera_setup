@@ -80,10 +80,5 @@ This project is still a work in progress. Future improvements and learning objec
 - Integrating a Kalman Filter for tracking.
 - Combining detection and Optical Flow using a Kalman Filter for data fusion.
 
-## Contributing
 
-Contributions are welcome! Please open an issue or submit a pull request for any improvements or bug fixes.
 
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
