@@ -1,3 +1,6 @@
+#ignore build folder
+build/
+
 # Ignore video files
 *.mp4
 *.avi
