@@ -75,7 +75,7 @@ cv_learn/
 ## Additional Notes
 
 This project is still a work in progress. Future improvements and learning objectives include:
-
+-better project structure and convention.
 - Implementing Optical Flow.
 - Kalman Filter.
 - Combining detection and Optical Flow outputs in Kalmain filter.
