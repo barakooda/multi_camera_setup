@@ -3,8 +3,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Load the CSV files
-file_path_gt = r"D:\temp\ar51test\csv_files\ball_pos_gt.csv"
-file_path_reality = r"D:\temp\ar51test\csv_files\ball_pos_real.csv"
+file_path_gt = r"D:\temp\cv_learn\csv_files\ball_pos_gt.csv"
+file_path_reality = r"D:\temp\cv_learn\csv_files\ball_pos_real.csv"
 
 # Read the CSV files into pandas dataframes with error handling
 df_gt = pd.read_csv(file_path_gt, on_bad_lines='skip')
@@ -37,7 +37,7 @@ plt.ylim(0, 200)  # Set the y-axis limit to zoom in
 plt.grid(True)
 
 # Save the plot as an image file
-output_file_path = r"D:\temp\ar51test\l2graph\l2_distance_plot.png"
+output_file_path = r"D:\temp\cv_learn\l2graph\l2_distance_plot.png"
 plt.savefig(output_file_path)
 
 plt.show()

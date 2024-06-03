@@ -9,7 +9,7 @@
 
 //build command
 //cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
-//>> cmake --build build --config Release --target ALL_BUILD -j 18
+//cmake --build build --config Release --target ALL_BUILD -j 18
 
 // Function to process a camera's frame
 void processCameraFrame(Camera& camera, int frame_index, int cameras_num) {

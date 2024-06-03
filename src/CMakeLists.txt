@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(ar52_test)
+project(multi_camera_setup)
 
 # Enable compiler optimizations
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2 /GL /Oi /Ot /Ob2 /Gy")
@@ -14,7 +14,7 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(D:/opencv/source/opencv/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-add_executable(ar52_test main.cpp)
+add_executable(multi_camera_setup main.cpp)
 
-target_link_libraries(ar52_test ${OpenCV_LIBS})
+target_link_libraries(multi_camera_setup ${OpenCV_LIBS})
 

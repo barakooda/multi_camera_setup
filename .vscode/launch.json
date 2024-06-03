@@ -5,7 +5,7 @@
             "name": "Launch Release Executable",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/Release/ar52_test.exe",
+            "program": "${workspaceFolder}/build/Release/multi_camera_setup.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

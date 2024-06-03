@@ -1,5 +1,5 @@
 {
-    "cmake.sourceDirectory": "D:/temp/ar51test/src",
+    "cmake.sourceDirectory": "D:/temp/cv_learn/src",
     "files.associations": {
         "algorithm": "cpp",
         "any": "cpp",
