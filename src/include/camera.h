@@ -3,6 +3,8 @@
 
 #include <string>
 #include <opencv2/opencv.hpp>
+#include "kalman.h"
+
 
 class Camera {
 public:
@@ -16,15 +18,23 @@ public:
     cv::Point2f current_tracker_position; // Center of the ball
     cv::Point2f previous_tracker_position; // Previous center of the ball
     cv::Point2f tracker_speed; // 2D speed of the ball
+
+    SimpleKalmanFilter kalman_fitler; // Kalman filter ovject
+
+
+
     int index; // Index of the camera
     bool is_detection_active = false;
+    bool is_detection_valid = false;
 
     Camera(const std::string& name, 
            const std::vector<double>& tvec, 
            const std::vector<double>& rvec, 
            const std::vector<std::vector<double>>& K,
            const int index)
-    : name(name), tvec(tvec), rvec(rvec), K(K),index(index) {}
+    : name(name), tvec(tvec), rvec(rvec), K(K),index(index) {
+        kalman_fitler.initKalmanFilter();
+    }
 
     // Method to open video file
     bool openVideo(const std::string& videoPath) {

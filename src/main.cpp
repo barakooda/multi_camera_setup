@@ -7,6 +7,10 @@
 #include "utils.h"
 #include "tracking.h"
 
+//build command
+//cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+//>> cmake --build build --config Release --target ALL_BUILD -j 18
+
 // Function to process a camera's frame
 void processCameraFrame(Camera& camera, int frame_index, int cameras_num) {
     camera.readNextFrame();
@@ -62,20 +66,20 @@ void processParallelCameraFrames(std::vector<Camera> &cameras,int &cameras_num, 
         // Save the 3D point to a CSV file
         myfile << point3D.x << "," << point3D.y << "," << point3D.z << "\n";
 
-        /*
+        
         // Visualize the output
         for (auto& camera : cameras) {
             visualizeOutput(camera);
         }
-        */
+        
 
-        /*
+        
         // Debug output
         std::cout << "position at frame " << frame_index << ": " << point3D << std::endl;
         for (auto& camera : cameras) {
             std::cout << "Camera " << camera.index << " is tracking active: " << camera.is_detection_active << std::endl;
         }
-        */
+        
     }
     myfile.close();
     

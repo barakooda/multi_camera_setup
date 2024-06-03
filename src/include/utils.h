@@ -93,11 +93,11 @@ cv::Point2f get_PositionFromContour(Mat &frame, vector<Point> &contour, Point2f 
     // Get the minimum enclosing circle
     minEnclosingCircle(contour, tracker_pos, radius);
     
-    /*
+    
     // Draw the circle
     cv::Point tracker_pos_int = cv::Point(cvRound(tracker_pos.x), cvRound(tracker_pos.y));;
     circle(frame, tracker_pos_int, cvRound(radius), Scalar(0, 255, 0), 2); 
-    */
+    
    
     return tracker_pos;
 }
