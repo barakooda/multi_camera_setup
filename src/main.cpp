@@ -6,10 +6,14 @@
 #include "multi_camera_setup/camera_parameters.h"
 #include "multi_camera_setup/utils.h"
 #include "multi_camera_setup/tracking.h"
+#include <filesystem>
 
 //build command
 //cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
 //cmake --build build --config Release --target ALL_BUILD -j 18
+
+
+
 
 // Function to process a camera's frame
 void processCameraFrame(Camera& camera, int frame_index, int cameras_num) {
@@ -88,8 +92,17 @@ void processParallelCameraFrames(std::vector<Camera> &cameras,int &cameras_num, 
 
 
 int main() {
+
+    // Get the project path
+    std::filesystem::path project_path = findProjectRoot(PROJECT_NAME);
+    std::cout << "Project path: " << project_path << std::endl;
+    std::cout << "Project path: " << project_path << std::endl;
+    std::cout << "Project path: " << project_path << std::endl;
+    std::cout << "Project path: " << project_path << std::endl;
+
+
     // Load camera parameters from JSON file
-    std::string jsonFilePath = "D:/temp/ar51test/calibration/cameras.json";
+    std::string jsonFilePath = (project_path / "calibration" / "cameras.json").string() ;
     std::vector<CameraData> cameraParams = loadCameraParamsFromJson(jsonFilePath);
     std::vector<Camera> cameras;
 
@@ -97,7 +110,7 @@ int main() {
     Initialize_cameras_parameters(cameraParams, cameras);
 
     // Base path for videos and backgrounds
-    std::string videoBasePath = "D:/temp/ar51test/videos/";
+    std::string videoBasePath = (project_path / "videos/").string();
     std::string backgroundPath = videoBasePath + "background/";
 
     // Initialize videos for all cameras

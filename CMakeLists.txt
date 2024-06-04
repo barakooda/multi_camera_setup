@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.10)
 
 project(multi_camera_setup)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+
 # Enable compiler optimizations
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2 /GL /Oi /Ot /Ob2 /Gy")
 set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG /OPT:REF /OPT:ICF")
@@ -28,3 +31,7 @@ target_link_libraries(multi_camera_setup ${OpenCV_LIBS})
 # Enable testing
 enable_testing()
 add_subdirectory(tests)
+
+
+# Define a preprocessor macro with the project name
+add_compile_definitions(PROJECT_NAME="${PROJECT_NAME}")
