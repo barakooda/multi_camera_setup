@@ -96,9 +96,6 @@ int main() {
     // Get the project path
     std::filesystem::path project_path = findProjectRoot(PROJECT_NAME);
     std::cout << "Project path: " << project_path << std::endl;
-    std::cout << "Project path: " << project_path << std::endl;
-    std::cout << "Project path: " << project_path << std::endl;
-    std::cout << "Project path: " << project_path << std::endl;
 
 
     // Load camera parameters from JSON file
