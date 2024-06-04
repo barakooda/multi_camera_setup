@@ -58,7 +58,7 @@ void visualizeOutput(Camera &camera)
 }
 
 // Function to check if the tracking is active
-bool check_detection_active(int frame_index, int cameras_num, Camera &camera)
+bool checkDetectionActive(int frame_index, int cameras_num, Camera &camera)
 {
 
     int active_index = frame_index % cameras_num;
@@ -87,7 +87,7 @@ vector<Point> findContoursInMask(const Mat &mask, float areaThreshold) {
     return filteredContour;
 }
 
-cv::Point2f get_PositionFromContour(Mat &frame, vector<Point> &contour, Point2f &tracker_pos, Point2f &previous_tracker_pos) 
+cv::Point2f getPositionFromContour(Mat &frame, vector<Point> &contour, Point2f &tracker_pos, Point2f &previous_tracker_pos) 
 {
     float radius;
     // Get the minimum enclosing circle
@@ -163,9 +163,9 @@ cv::Point3d triangulatePoint(const std::vector<Camera>& cameras, const std::vect
 }
 
 
-cv::Point2f trackPointOpticalFlow(const cv::Mat& previousFrame, const cv::Mat& currentFrame, const cv::Point2f& previousPoint) {
-    std::vector<cv::Point2f> previousPoints(1, previousPoint);
-    std::vector<cv::Point2f> currentPoints;
+cv::Point2f trackPointOpticalFlow(const cv::Mat& previous_frame, const cv::Mat& current_frame, const cv::Point2f& previous_point) {
+    std::vector<cv::Point2f> previous_points(1, previous_point);
+    std::vector<cv::Point2f> current_points;
     std::vector<uchar> status;
     std::vector<float> err;
 
@@ -175,13 +175,13 @@ cv::Point2f trackPointOpticalFlow(const cv::Mat& previousFrame, const cv::Mat& c
     cv::TermCriteria criteria = cv::TermCriteria(cv::TermCriteria::EPS | cv::TermCriteria::COUNT, 10, 0.03);
 
     // Calculate optical flow to get the new point position
-    cv::calcOpticalFlowPyrLK(previousFrame, currentFrame, previousPoints, currentPoints, status, err, winSize, maxLevel, criteria);
+    cv::calcOpticalFlowPyrLK(previous_frame, current_frame, previous_points, current_points, status, err, winSize, maxLevel, criteria);
 
     // Check if the flow was found
     if (status[0] == 1) {
-        return currentPoints[0];
+        return current_points[0];
     } else {
-        return previousPoint;
+        return previous_point;
     }
 }
 

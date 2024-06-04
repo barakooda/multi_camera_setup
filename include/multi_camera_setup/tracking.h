@@ -14,7 +14,7 @@ void calculateCurrentPosition(cv::Mat &mask, cv::Mat &frame, Camera &camera)
     if (!contour.empty())
     {
         {
-            get_PositionFromContour(frame, contour, camera.current_tracker_position, camera.previous_tracker_position);
+            getPositionFromContour(frame, contour, camera.current_tracker_position, camera.previous_tracker_position);
             camera.is_detection_valid = true;
             //camera.kalman_fitler.correct(camera.current_tracker_position);
             //camera.current_tracker_position = camera.kalman_fitler.predict();
@@ -38,7 +38,7 @@ void calculateTrackerSpeed(Camera &camera, cv::Mat &frame)
     visualizeSpeed(camera.previous_tracker_position, camera.current_tracker_position, frame);
 }
 
-void tracker_by_detection(Camera &camera)
+void trackerByDetection(Camera &camera)
 {
     
     Mat &frame = camera.currentFrame;
@@ -96,9 +96,9 @@ void trackBallInFrame(Camera &camera, int frame_index, int cameras_num)
 {
 
     //active detection flag for each camera based on the frame index and camera index for future use.
-    camera.is_detection_active = check_detection_active(frame_index, cameras_num, camera);
+    camera.is_detection_active = check_DetectionActive(frame_index, cameras_num, camera);
 
-    tracker_by_detection(camera);
+    trackerByDetection(camera);
 
         //Was not able to get good results from the optical flow and kalman filter.
         //TODO learn both to complete the task.

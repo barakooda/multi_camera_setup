@@ -1,5 +1,5 @@
 {
-    "cmake.sourceDirectory": "D:/temp/cv_learn/src",
+    "cmake.sourceDirectory": "D:/temp/multi_camera_setup",
     "files.associations": {
         "algorithm": "cpp",
         "any": "cpp",

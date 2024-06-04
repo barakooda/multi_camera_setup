@@ -12,7 +12,7 @@ public:
     std::vector<double> tvec; // Translation vector
     std::vector<double> rvec; // Rotation vector
     std::vector<std::vector<double>> K; // Intrinsic matrix
-    cv::Mat currentFrame; // Current video frame
+    cv::Mat current_frame; // Current video frame
     cv::Mat background; // Background image
     cv::VideoCapture capture; // Video capture object
     cv::Point2f current_tracker_position; // Center of the ball
@@ -52,7 +52,7 @@ public:
             std::cerr << "Video file not opened." << std::endl;
             return false;
         }
-        return capture.read(currentFrame);
+        return capture.read(current_frame);
     }
 
     // Release the video capture object
