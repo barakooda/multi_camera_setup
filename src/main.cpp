@@ -39,7 +39,9 @@ void processParallelCameraFrames(std::vector<Camera> &cameras,int &cameras_num, 
 
     // Open a csv file to save the 3d points
     std::ofstream myfile;
-    myfile.open("D:/temp/ar51test/csv_files/ball_pos_real.csv");
+    std::filesystem::path project_path = findProjectRoot(PROJECT_NAME);
+    std::string csvFilePath = (project_path / "csv_files" / "ball_pos_real.csv").string();
+    myfile.open(csvFilePath);
     
     // Create thread for each camera
     std::vector<std::thread> threads(cameras_num);
