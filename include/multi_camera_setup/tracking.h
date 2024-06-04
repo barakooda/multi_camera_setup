@@ -41,7 +41,7 @@ void calculateTrackerSpeed(Camera &camera, cv::Mat &frame)
 void trackerByDetection(Camera &camera)
 {
     
-    Mat &frame = camera.currentFrame;
+    Mat &frame = camera.current_frame;
     Mat &background = camera.background;
 
     if (frame.empty() || background.empty())
@@ -96,7 +96,7 @@ void trackBallInFrame(Camera &camera, int frame_index, int cameras_num)
 {
 
     //active detection flag for each camera based on the frame index and camera index for future use.
-    camera.is_detection_active = check_DetectionActive(frame_index, cameras_num, camera);
+    camera.is_detection_active = checkDetectionActive(frame_index, cameras_num, camera);
 
     trackerByDetection(camera);
 

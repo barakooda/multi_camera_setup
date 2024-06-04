@@ -1,10 +1,14 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import os
 
-# Load the CSV files
-file_path_gt = r"D:\temp\cv_learn\csv_files\ball_pos_gt.csv"
-file_path_reality = r"D:\temp\cv_learn\csv_files\ball_pos_real.csv"
+# Get the directory of the current script
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Load the CSV files using relative paths
+file_path_gt = os.path.join(script_dir, "..", "csv_files", "ball_pos_gt.csv")
+file_path_reality = os.path.join(script_dir, "..", "csv_files", "ball_pos_real.csv")
 
 # Read the CSV files into pandas dataframes with error handling
 df_gt = pd.read_csv(file_path_gt, on_bad_lines='skip')
@@ -36,8 +40,8 @@ plt.title('L2 Distance between Vectors from Two Files (Zoomed in to 200 mm)')
 plt.ylim(0, 200)  # Set the y-axis limit to zoom in
 plt.grid(True)
 
-# Save the plot as an image file
-output_file_path = r"D:\temp\cv_learn\l2graph\l2_distance_plot.png"
+# Save the plot as an image file using a relative path
+output_file_path = os.path.join(script_dir, "..", "l2graph", "l2_distance_plot.png")
 plt.savefig(output_file_path)
 
 plt.show()

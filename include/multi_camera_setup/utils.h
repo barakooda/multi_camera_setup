@@ -49,7 +49,7 @@ void visualizeOutput(Camera &camera)
         }
 
         cv::Mat resized_image;
-        cv::resize(camera.currentFrame, resized_image, cv::Size(690, 512), 0, 0, cv::INTER_AREA);
+        cv::resize(camera.current_frame, resized_image, cv::Size(690, 512), 0, 0, cv::INTER_AREA);
 
         imshow(window_name, resized_image);
         resizeWindow(window_name, 690, 512);

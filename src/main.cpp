@@ -2,10 +2,10 @@
 #include <iostream>
 #include <vector>
 #include <thread>
-#include "camera.h"
-#include "camera_parameters.h"
-#include "utils.h"
-#include "tracking.h"
+#include "multi_camera_setup/camera.h"
+#include "multi_camera_setup/camera_parameters.h"
+#include "multi_camera_setup/utils.h"
+#include "multi_camera_setup/tracking.h"
 
 //build command
 //cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
@@ -14,7 +14,7 @@
 // Function to process a camera's frame
 void processCameraFrame(Camera& camera, int frame_index, int cameras_num) {
     camera.readNextFrame();
-    if (camera.currentFrame.empty()) {
+    if (camera.current_frame.empty()) {
         std::cerr << "Error: Read an empty frame for camera: " << camera.name << std::endl;
         return;
     }
