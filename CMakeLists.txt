@@ -18,6 +18,8 @@ find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(D:/opencv/source/opencv/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+find_package(TBB REQUIRED)
+
 
 # Source files
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
@@ -26,7 +28,10 @@ file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 add_executable(multi_camera_setup ${SOURCES})
 
 # Link libraries
-target_link_libraries(multi_camera_setup ${OpenCV_LIBS})
+target_link_libraries(multi_camera_setup 
+    ${OpenCV_LIBS}
+    TBB::tbb
+)
 
 # Enable testing
 enable_testing()
