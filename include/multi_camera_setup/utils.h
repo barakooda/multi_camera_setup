@@ -118,7 +118,6 @@ void visualizeSpeed(const Point2f &prev_point, const Point2f &curr_point, Mat &f
 }
 
 
-
 cv::Point3d triangulatePoint(const std::vector<Camera>& cameras, const std::vector<cv::Point2d>& imagePoints) {
     if (cameras.size() != imagePoints.size()) {
         throw std::invalid_argument("Number of cameras must match the number of image points.");
@@ -129,39 +128,36 @@ cv::Point3d triangulatePoint(const std::vector<Camera>& cameras, const std::vect
         projectionMatrices.push_back(camera.getProjectionMatrix());
     }
 
-    // Accumulator for homogeneous points
-    cv::Mat points4D = cv::Mat::zeros(4, 1, CV_64F);
+    // Matrix to hold the linear system of equations
+    cv::Mat A = cv::Mat::zeros(2 * (int)cameras.size(), 4, CV_64F);
 
-    // Convert cv::Point2d to cv::Mat
-    std::vector<cv::Mat> imagePointsMat;
-    for (const auto& point : imagePoints) {
-        cv::Mat ptMat(2, 1, CV_64F);
-        ptMat.at<double>(0) = point.x;
-        ptMat.at<double>(1) = point.y;
-        imagePointsMat.push_back(ptMat);
+    // Fill the matrix A
+    for (int i = 0; i < (int)cameras.size(); ++i) {
+        double x = imagePoints[i].x;
+        double y = imagePoints[i].y;
+        const cv::Mat& P = projectionMatrices[i];
+
+        A.row(2 * i)     = x * P.row(2) - P.row(0);
+        A.row(2 * i + 1) = y * P.row(2) - P.row(1);
     }
 
-    // Triangulate points using all pairs of cameras
-    int pair_count = 0;
-    for (size_t i = 0; i < cameras.size() - 1; ++i) {
-        for (size_t j = i + 1; j < cameras.size(); ++j) {
-            cv::Mat points4DNew;
-            cv::triangulatePoints(projectionMatrices[i], projectionMatrices[j], imagePointsMat[i], imagePointsMat[j], points4DNew);
-            points4D += points4DNew;
-            pair_count++;
-        }
-    }
-    points4D /= pair_count;
+    // Perform SVD
+    cv::Mat w, u, vt;
+    cv::SVD::compute(A, w, u, vt);
+
+    // The solution is the last row of Vt
+    cv::Mat point4D = vt.row(3).t();
 
     // Convert from homogeneous coordinates to 3D
     cv::Point3d point3D(
-        points4D.at<double>(0) / points4D.at<double>(3),
-        points4D.at<double>(1) / points4D.at<double>(3),
-        points4D.at<double>(2) / points4D.at<double>(3)
+        point4D.at<double>(0) / point4D.at<double>(3),
+        point4D.at<double>(1) / point4D.at<double>(3),
+        point4D.at<double>(2) / point4D.at<double>(3)
     );
 
     return point3D;
 }
+
 
 
 cv::Point2f trackPointOpticalFlow(const cv::Mat& previous_frame, const cv::Mat& current_frame, const cv::Point2f& previous_point) {
